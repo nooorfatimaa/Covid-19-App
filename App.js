@@ -69,16 +69,27 @@ const WorldStatsScreen = ({navigation}) => {
 
   return(
     <View style={styles.container}>
-      <View style={{height: 60, alignItems: 'center', justifyContent: 'center'}}><Text style={{fontWeight: 'bold', fontSize: 30, color: 'grey', padding: 3}}>WORLD STATISTICS</Text></View>
+      <View style={{height: 70, alignItems: 'center', justifyContent: 'center', marginTop: 15,}}><Text style={{fontWeight: 'bold', fontSize: 30, color: 'grey', padding: 3}}>WORLD STATISTICS</Text></View>
       <View>
-        <Text>{JSON.stringify(population)}</Text>
-        <Text>{JSON.stringify(covid.cases)}</Text>
+        <Text>World Population: {JSON.stringify(population)}</Text>
+        <Text>Confirmed Cases: {JSON.stringify(covid.cases)}</Text>
+        <Text>Confirmed Cases % : {parseFloat(JSON.stringify(covid.cases)/JSON.stringify(population)).toFixed(4)*100}% of world population</Text>
+        <Text>Recovered: {JSON.stringify(covid.recovered)}</Text>
+        <Text>Recovered % : {parseFloat(JSON.stringify(covid.recovered)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
+        <Text>Critical: {JSON.stringify(covid.critical)}</Text>
+        <Text>Critical % : {parseFloat(JSON.stringify(covid.critical)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
+        <Text>Deaths: {JSON.stringify(covid.critical)}</Text>
+        <Text>Death % : {parseFloat(JSON.stringify(covid.deaths)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
+        <Text>Last Updated: 01-12-2020</Text>
       </View>
     </View>
   );
 }
 
 const CountryListScreen = ({navigation}) => {
+  const [loading, setLoading] = useState(true);
+  const [countryList, setCountryList] = useState([]);
+
   return(
     <View>
     </View>
