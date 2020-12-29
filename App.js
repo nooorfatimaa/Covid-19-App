@@ -90,8 +90,58 @@ const CountryListScreen = ({navigation}) => {
   const [loading, setLoading] = useState(true);
   const [countryList, setCountryList] = useState([]);
 
-  return(
-    <View>
+  React.useEffect(() => {
+    getList();
+  }, []);
+
+  const getList = () => {
+    const options = {
+      method: 'GET',
+      url: 'https://coronavirus-19-api.herokuapp.com/countries',
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        setCountryList(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, padding: 20 }}>
+        <ActivityIndicator size="large" color="blue" />
+        <Text>Loading Data from JSON Placeholder API ...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ paddingTop: 30 }}>
+      <FlatList
+        data={countryList}
+        renderItem={({ item }) => (
+          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics")}>
+            <View
+              style={{
+                flexDirection: 'row',
+                padding: 10,
+                borderBottomWidth: 1,
+                borderColor: 'grey',
+              }}>
+              <View style={{ paddingLeft: 5, paddingRight: 10 }}>
+                <Text>
+                  {item.country}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 }
@@ -114,12 +164,13 @@ const CountryStack = () => {
   return (
     <Stack.Navigator
       //initialRouteName={"Start"} 
-      screenOptions={{
+      screenOptions={({navigation}) => ({
         headerTintColor: "grey",
         headerStyle: {
           backgroundColor: "lightblue"
-        }
-      }}>
+        },
+        headerLeft: () => <View style={{marginLeft: 10}}><Ionicons name="arrow-back-circle-sharp" color="grey" size={35} onPress={() => navigation.goBack()}/></View>
+      })}>
       <Stack.Screen name="Countries List" component={CountryListScreen} />
       <Stack.Screen name="Country Statistics" component={CountryStatsScreen} />
     </Stack.Navigator>
@@ -129,12 +180,13 @@ const CountryStack = () => {
 const FavouriteStack = () => {
   return (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={({navigation}) => ({
         headerTintColor: "grey",
         headerStyle: {
           backgroundColor: "lightblue"
-        }
-      }}>
+        },
+        headerLeft: () => <View style={{marginLeft: 10}}><Ionicons name="arrow-back-circle-sharp" color="grey" size={35} onPress={() => navigation.goBack()}/></View>
+      })}>
       <Stack.Screen name="Favourites" component={FavouriteListScreen} />
       <Stack.Screen name="Country Statistics" component={CountryStatsScreen} />
     </Stack.Navigator>
@@ -147,14 +199,13 @@ export default function App() {
       <Drawer.Navigator
       //openByDefault={true}
       //drawerType="slide"
-      //drawerStyle={{
-        //backgroundColor: 'lightyellow',
-        //width: 200,
-      //}}>
-      >
-      <Drawer.Screen name="Home" component={WorldStatsScreen} />
-      <Drawer.Screen name="Countries List" component={CountryStack} />
-      <Drawer.Screen name="Favourites" component={FavouriteStack} />
+      drawerStyle={{
+        backgroundColor: 'white',
+        //width: 300,
+      }}>
+      <Drawer.Screen name="World Statistics" component={WorldStatsScreen} options={{drawerIcon: () => (<Ionicons name="earth" size={35} color="lightblue" />),}} />
+      <Drawer.Screen name="Countries List" component={CountryStack} options={{drawerIcon: () => (<FontAwesome5 name="city" size={35} color="lightblue"/>),}} />
+      <Drawer.Screen name="Favourites" component={FavouriteStack} options={{drawerIcon: () => (<Ionicons name="star" size={35} color="lightblue"/>),}} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
