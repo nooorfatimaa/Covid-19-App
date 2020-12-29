@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import { View, Text, StyleSheet, Pressable, Button, TouchableOpacity, FlatList } from 'react-native';
+import axios from 'axios';
+import { View, Text, StyleSheet, Pressable, Button, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -9,13 +10,70 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const WorldStatsScreen = ({navigation}) => {
+  const [loading, setLoading] = useState(true);
+  const [population, setWorldPop] = useState();
+  const [covid, setCovidStats] = useState([]);
+  var country = 'World';
+
+  useEffect(() => {
+    getCovidData();
+    getWorldData();
+  }, []);
+
+  const getWorldData = () => {
+    const options = {
+      method: 'GET',
+      url: 'https://world-population.p.rapidapi.com/worldpopulation',
+      headers: {
+        'x-rapidapi-key': 'cb84d95f53mshe564f47b0a95244p17ad39jsn15c6dfb18d6f',
+        'x-rapidapi-host': 'world-population.p.rapidapi.com'
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        setLoading(false);
+        setWorldPop(response.data.body.world_population);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  };
+
+  const getCovidData = () => {
+    const options = {
+      method: 'GET',
+      url: `https://coronavirus-19-api.herokuapp.com/countries/${country}`,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        setCovidStats(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="blue" />
+        <Text>Loading Data from JSON Placeholder API ...</Text>
+      </View>
+    );
+  }
+
   return(
     <View style={styles.container}>
-      <View style={{alignItems: 'center'}}><Text style={{fontWeight: 'bold', fontSize: '30', color: 'grey'}}>WORLD STATISTICS</Text></View>
-      <Button
-        title="Go to country list"
-        onPress={() => navigation.navigate("Countries List")}
-      ></Button>
+      <View style={{height: 60, alignItems: 'center', justifyContent: 'center'}}><Text style={{fontWeight: 'bold', fontSize: 30, color: 'grey', padding: 3}}>WORLD STATISTICS</Text></View>
+      <View>
+        <Text>{JSON.stringify(population)}</Text>
+        <Text>{JSON.stringify(covid.cases)}</Text>
+      </View>
     </View>
   );
 }
@@ -23,10 +81,6 @@ const WorldStatsScreen = ({navigation}) => {
 const CountryListScreen = ({navigation}) => {
   return(
     <View>
-      <Button
-        title="Go to country list"
-        onPress={() => navigation.navigate("Countries List")}
-      ></Button>
     </View>
   );
 }
@@ -34,10 +88,6 @@ const CountryListScreen = ({navigation}) => {
 const CountryStatsScreen = ({navigation}) => {
   return(
     <View>
-      <Button
-        title="Go to country list"
-        onPress={() => navigation.navigate("Countries List")}
-      ></Button>
     </View>
   );
 }
@@ -45,10 +95,6 @@ const CountryStatsScreen = ({navigation}) => {
 const FavouriteListScreen = ({navigation}) => {
   return(
     <View>
-      <Button
-        title="Go to country list"
-        onPress={() => navigation.navigate("Countries List")}
-      ></Button>
     </View>
   );
 }
@@ -105,15 +151,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
     backgroundColor: 'lightblue',
-    padding: 8,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    flex : 1,
   },
 });
