@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { View, Text, StyleSheet, Pressable, Button, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -69,7 +69,7 @@ const WorldStatsScreen = ({navigation}) => {
 
   return(
     <View style={styles.container}>
-      <View style={{height: 70, alignItems: 'center', justifyContent: 'center', marginTop: 15,}}><Text style={{fontWeight: 'bold', fontSize: 30, color: 'grey', padding: 3}}>WORLD STATISTICS</Text></View>
+      <View style={{height: 70, alignItems: 'center', justifyContent: 'center', marginTop: 20,}}><Text style={{fontWeight: 'bold', fontSize: 30, color: 'grey', padding: 3}}>WORLD STATISTICS</Text></View>
       <View style={{alignItems: 'center'}}>
         <Text style={{fontWeight: 'bold', fontSize: 20}}>World Population</Text>
         <Text style={{marginBottom: 15}}>{JSON.stringify(population)}</Text>
@@ -93,7 +93,8 @@ const WorldStatsScreen = ({navigation}) => {
 
 const CountryListScreen = ({navigation}) => {
   const [loading, setLoading] = useState(true);
-  const [countryList, setCountryList] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [countryDisplayList, setDisplayList] = useState([]);
 
   React.useEffect(() => {
     getList();
@@ -108,13 +109,19 @@ const CountryListScreen = ({navigation}) => {
     axios
       .request(options)
       .then(function (response) {
-        setCountryList(response.data);
+        console.log(response.data);
+        setCountries(response.data);
+        setDisplayList(response.data);
         setLoading(false);
       })
       .catch(function (error) {
         console.error(error);
       });
   };
+
+  const updateDisplayList = (country) => {
+    //setDisplayList(countries.filter((val)=>val.includes(country)));
+  }
 
   if (loading) {
     return (
@@ -127,9 +134,16 @@ const CountryListScreen = ({navigation}) => {
 
   return (
     <View style={{ paddingTop: 30 }}>
-      <View style={{borderWidth: 1, width: '70%', height: 60}}></View>
+      <View style={{borderWidth: 1, width: '70%', height: 60}}>
+        <TextInput 
+          style={{ height: 55, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={text => updateDisplayList(text)}
+          placeholder = "search"
+          //value={value}
+        />
+      </View>
       <FlatList
-        data={countryList}
+        data={countryDisplayList}
         renderItem={({ item }) => (
           <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics", {country: item.country})}>
             <View
