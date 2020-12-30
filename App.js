@@ -25,7 +25,7 @@ const WorldStatsScreen = ({navigation}) => {
       method: 'GET',
       url: 'https://world-population.p.rapidapi.com/worldpopulation',
       headers: {
-        'x-rapidapi-key': 'cb84d95f53mshe564f47b0a95244p17ad39jsn15c6dfb18d6f',
+        'x-rapidapi-key': '**************************************',
         'x-rapidapi-host': 'world-population.p.rapidapi.com'
       },
     };
@@ -122,19 +122,20 @@ const CountryListScreen = ({navigation}) => {
 
   return (
     <View style={{ paddingTop: 30 }}>
+      <View style={{borderWidth: 1, width: '70%', height: 60}}></View>
       <FlatList
         data={countryList}
         renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics")}>
+          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics", {country: item.country})}>
             <View
               style={{
                 flexDirection: 'row',
                 padding: 10,
                 borderBottomWidth: 1,
-                borderColor: 'grey',
+                borderColor: 'lightblue',
               }}>
               <View style={{ paddingLeft: 5, paddingRight: 10 }}>
-                <Text>
+                <Text style={{color:'grey', fontSize: 20, fontWeight: 'large'}}>
                   {item.country}
                 </Text>
               </View>
@@ -146,9 +147,46 @@ const CountryListScreen = ({navigation}) => {
   );
 }
 
-const CountryStatsScreen = ({navigation}) => {
-  return(
-    <View>
+const CountryStatsScreen = ({navigation, route}) => {
+  const country = route.params.country;
+  const [loading, setLoading] = useState(true);
+  const [countryStats, setCountryStats] = useState([]);
+  React.useEffect(() => {
+    getStats();
+  }, []);
+
+  const getStats = () => {
+    const options = {
+      method: 'GET',
+      url: `https://coronavirus-19-api.herokuapp.com/countries/${country}`,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        setCountryStats(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, padding: 20 }}>
+        <ActivityIndicator size="large" color="blue" />
+        <Text>Loading Data from JSON Placeholder API ...</Text>
+      </View>
+    );
+  }
+  return (
+    <View style={{ paddingTop: 30 }}>
+      <Text>country: {countryStats.country}</Text>
+      <Text>cases: {JSON.stringify(countryStats.cases)}</Text>
+      <Text>recovered: {JSON.stringify(countryStats.recovered)}</Text>
+      <Text>critical: {JSON.stringify(countryStats.critical)}</Text>
+      <Text>deaths: {JSON.stringify(countryStats.deaths)}</Text>
     </View>
   );
 }
@@ -201,7 +239,7 @@ export default function App() {
       //drawerType="slide"
       drawerStyle={{
         backgroundColor: 'white',
-        //width: 300,
+        width: 250,
       }}>
       <Drawer.Screen name="World Statistics" component={WorldStatsScreen} options={{drawerIcon: () => (<Ionicons name="earth" size={35} color="lightblue" />),}} />
       <Drawer.Screen name="Countries List" component={CountryStack} options={{drawerIcon: () => (<FontAwesome5 name="city" size={35} color="lightblue"/>),}} />
