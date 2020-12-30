@@ -25,7 +25,7 @@ const WorldStatsScreen = ({navigation}) => {
       method: 'GET',
       url: 'https://world-population.p.rapidapi.com/worldpopulation',
       headers: {
-        'x-rapidapi-key': '**************************************',
+        'x-rapidapi-key': 'cb84d95f53mshe564f47b0a95244p17ad39jsn15c6dfb18d6f',
         'x-rapidapi-host': 'world-population.p.rapidapi.com'
       },
     };
@@ -70,17 +70,22 @@ const WorldStatsScreen = ({navigation}) => {
   return(
     <View style={styles.container}>
       <View style={{height: 70, alignItems: 'center', justifyContent: 'center', marginTop: 15,}}><Text style={{fontWeight: 'bold', fontSize: 30, color: 'grey', padding: 3}}>WORLD STATISTICS</Text></View>
-      <View>
-        <Text>World Population: {JSON.stringify(population)}</Text>
-        <Text>Confirmed Cases: {JSON.stringify(covid.cases)}</Text>
-        <Text>Confirmed Cases % : {parseFloat(JSON.stringify(covid.cases)/JSON.stringify(population)).toFixed(4)*100}% of world population</Text>
-        <Text>Recovered: {JSON.stringify(covid.recovered)}</Text>
-        <Text>Recovered % : {parseFloat(JSON.stringify(covid.recovered)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
-        <Text>Critical: {JSON.stringify(covid.critical)}</Text>
-        <Text>Critical % : {parseFloat(JSON.stringify(covid.critical)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
-        <Text>Deaths: {JSON.stringify(covid.critical)}</Text>
-        <Text>Death % : {parseFloat(JSON.stringify(covid.deaths)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
-        <Text>Last Updated: 01-12-2020</Text>
+      <View style={{alignItems: 'center'}}>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>World Population</Text>
+        <Text style={{marginBottom: 15}}>{JSON.stringify(population)}</Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>Confirmed Cases</Text>
+        <Text>{JSON.stringify(covid.cases)}</Text>
+        <Text style={{marginBottom: 15}}>{parseFloat(JSON.stringify(covid.cases)/JSON.stringify(population)).toFixed(4)*100}% of world population</Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>Recovered</Text>
+        <Text>{JSON.stringify(covid.recovered)}</Text>
+        <Text style={{marginBottom: 15}}>{parseFloat(JSON.stringify(covid.recovered)/JSON.stringify(covid.cases)).toFixed(2)*100}% of total cases</Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>Critical</Text>
+        <Text>{JSON.stringify(covid.critical)}</Text>
+        <Text style={{marginBottom: 15}}>{parseFloat(JSON.stringify(covid.critical)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>Deaths</Text>
+        <Text>{JSON.stringify(covid.critical)}</Text>
+        <Text style={{marginBottom: 20}}>{parseFloat(JSON.stringify(covid.deaths)/JSON.stringify(covid.cases)).toFixed(4)*100}% of total cases</Text>
+        <Text style={{fontWeight: 'large', fontSize: 15, color: 'grey'}}>Last Updated: 10-12-2020</Text>
       </View>
     </View>
   );
@@ -182,11 +187,21 @@ const CountryStatsScreen = ({navigation, route}) => {
   }
   return (
     <View style={{ paddingTop: 30 }}>
-      <Text>country: {countryStats.country}</Text>
-      <Text>cases: {JSON.stringify(countryStats.cases)}</Text>
-      <Text>recovered: {JSON.stringify(countryStats.recovered)}</Text>
-      <Text>critical: {JSON.stringify(countryStats.critical)}</Text>
-      <Text>deaths: {JSON.stringify(countryStats.deaths)}</Text>
+    <View style={{alignItems: 'center'}}>
+      <Text style={{fontWeight: 'bold', fontSize: 30, padding: 10, color: 'grey'}}>{countryStats.country} Statistics</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 20}}>Total Cases</Text>
+      <Text>{JSON.stringify(countryStats.cases)}</Text>
+      <Text style={{marginBottom: 10, color:'grey'}}>{parseFloat(JSON.stringify(countryStats.cases)/82439376).toFixed(3)*100}% of total cases in the world</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 20}}>Recovered</Text>
+      <Text>{JSON.stringify(countryStats.recovered)}</Text>
+      <Text style={{marginBottom: 10, color:'grey'}}>{parseFloat(JSON.stringify(countryStats.recovered)/JSON.stringify(countryStats.cases)).toFixed(3)*100}% of total cases in {countryStats.country}</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 20}}>Critical</Text>
+      <Text>{JSON.stringify(countryStats.critical)}</Text>
+      <Text style={{marginBottom: 10, color:'grey'}}>{parseFloat(JSON.stringify(countryStats.critical)/JSON.stringify(countryStats.cases)).toFixed(3)*100}% of total cases in {countryStats.country}</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 20}}>Deaths</Text>
+      <Text>{JSON.stringify(countryStats.deaths)}</Text>
+      <Text style={{marginBottom: 10, color:'grey'}}>{parseFloat(JSON.stringify(countryStats.deaths)/JSON.stringify(countryStats.cases)).toFixed(2)*100}% of total cases in {countryStats.country}</Text>
+    </View>
     </View>
   );
 }
