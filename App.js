@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -137,12 +138,11 @@ const CountryListScreen = ({navigation}) => {
 
   return (
     <View style={{ paddingTop: 30 }}>
-      <View style={{borderWidth: 1, width: '70%', height: 60}}>
+      <View style={{width: '80%', height: 60, alignItems: 'center'}}>
         <TextInput 
-          style={{ height: 55, borderColor: 'gray', borderWidth: 1 }}
+          style={{ borderColor: 'gray',width: '90%', height: "100%", borderWidth: 2 }}
           onChangeText={text => updateDisplayList(text)}
-          placeholder = "search"
-          //value={value}
+          placeholder = "search countries"
         />
       </View>
       <FlatList
@@ -173,8 +173,11 @@ const CountryStatsScreen = ({navigation, route}) => {
   const country = route.params.country;
   const [loading, setLoading] = useState(true);
   const [countryStats, setCountryStats] = useState([]);
-  React.useEffect(() => {
+  const [starColor, setStarColor] = useState("lightgrey");
+
+  useEffect(() => {
     getStats();
+    checkFavourite();
   }, []);
 
   const getStats = () => {
@@ -194,6 +197,20 @@ const CountryStatsScreen = ({navigation, route}) => {
       });
   };
 
+  const setFavourite = async () => {
+    await AsyncStorage.setItem("-"+country+"-", country);
+    setStarColor("black");
+    const temp = await AsyncStorage.getItem(country);
+    alert(temp);
+  }
+
+  const checkFavourite = async () => {
+    let temp = await AsyncStorage.getItem(country);
+    if(temp) {
+      setStarColor("black");
+    }
+  }
+
   if (loading) {
     return (
       <View style={{ flex: 1, padding: 20 }}>
@@ -205,10 +222,11 @@ const CountryStatsScreen = ({navigation, route}) => {
   return (
     <View style={{ paddingTop: 30 }}>
     <View style={{alignItems: 'center'}}>
+      <Pressable onPress={()=> {setFavourite()}}><Ionicons name="star" size={40} color={starColor} /></Pressable>
       <Text style={{fontWeight: 'bold', fontSize: 30, padding: 10, color: 'grey'}}>{countryStats.country} Statistics</Text>
       <Text style={{fontWeight: 'bold', fontSize: 20}}>Total Cases</Text>
       <Text>{JSON.stringify(countryStats.cases)}</Text>
-      <Text style={{marginBottom: 10, color:'grey'}}>{parseFloat(JSON.stringify(countryStats.cases)/82439376).toFixed(3)*100}% of total cases in the world</Text>
+      <Text style={{marginBottom: 10, color:'gray'}}>{parseFloat(JSON.stringify(countryStats.cases)/82439376).toFixed(3)*100}% of total cases in the world</Text>
       <Text style={{fontWeight: 'bold', fontSize: 20}}>Recovered</Text>
       <Text>{JSON.stringify(countryStats.recovered)}</Text>
       <Text style={{marginBottom: 10, color:'grey'}}>{parseFloat(JSON.stringify(countryStats.recovered)/JSON.stringify(countryStats.cases)).toFixed(3)*100}% of total cases in {countryStats.country}</Text>
@@ -224,8 +242,45 @@ const CountryStatsScreen = ({navigation, route}) => {
 }
 
 const FavouriteListScreen = ({navigation}) => {
+  const [favCountryList, setFaveCountryList] = useState([]);
+  const [starColor, setStarColor] = useState("black");
+
+  const removeFromFav = async (country) => {
+    await AsyncStorage.removeItem(country);
+  }
+
+  const getFavourite = async () => {
+    const temp = await AsyncStorage.getAllKeys();
+    setFaveCountryList(temp);
+  }
+
+  useEffect(() => {
+    getFavourite();
+  });
+
   return(
-    <View>
+    <View style={{ paddingTop: 30 }}>
+      <FlatList
+        data={favCountryList}
+        renderItem={({ item }) => (
+          <View>
+          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics", {country: item})}>
+            <View
+              style={{
+                flexDirection: 'row',
+                padding: 10,
+              }}>
+              <View style={{ paddingLeft: 5, paddingRight: 10 }}>
+                <Text style={{color:'grey', fontSize: 20, fontWeight: 'large'}}>
+                  {item}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <View style={{alignItems:'flex-end', borderBottomWidth: 1, borderColor: 'lightblue'}}><Pressable onPress={()=> removeFromFav(item)}><Ionicons name="star" size={40} color={starColor} /></Pressable></View>
+          </View>
+        )}
+      />
     </View>
   );
 }
@@ -233,7 +288,6 @@ const FavouriteListScreen = ({navigation}) => {
 const CountryStack = () => {
   return (
     <Stack.Navigator
-      //initialRouteName={"Start"} 
       screenOptions={({navigation}) => ({
         headerTintColor: "grey",
         headerStyle: {
