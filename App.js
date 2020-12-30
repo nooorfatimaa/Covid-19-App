@@ -103,15 +103,18 @@ const CountryListScreen = ({navigation}) => {
   const getList = () => {
     const options = {
       method: 'GET',
-      url: 'https://coronavirus-19-api.herokuapp.com/countries',
+      url: 'https://world-population.p.rapidapi.com/allcountriesname',
+      headers: {
+        'x-rapidapi-key': 'cb84d95f53mshe564f47b0a95244p17ad39jsn15c6dfb18d6f',
+        'x-rapidapi-host': 'world-population.p.rapidapi.com'
+      }
     };
 
     axios
       .request(options)
       .then(function (response) {
-        console.log(response.data);
-        setCountries(response.data);
-        setDisplayList(response.data);
+        setCountries(response.data.body.countries);
+        setDisplayList(response.data.body.countries);
         setLoading(false);
       })
       .catch(function (error) {
@@ -120,7 +123,7 @@ const CountryListScreen = ({navigation}) => {
   };
 
   const updateDisplayList = (country) => {
-    //setDisplayList(countries.filter((val)=>val.includes(country)));
+    setDisplayList(countries.filter((val)=>val.includes(country)));
   }
 
   if (loading) {
@@ -145,7 +148,7 @@ const CountryListScreen = ({navigation}) => {
       <FlatList
         data={countryDisplayList}
         renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics", {country: item.country})}>
+          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("Country Statistics", {country: item})}>
             <View
               style={{
                 flexDirection: 'row',
@@ -155,7 +158,7 @@ const CountryListScreen = ({navigation}) => {
               }}>
               <View style={{ paddingLeft: 5, paddingRight: 10 }}>
                 <Text style={{color:'grey', fontSize: 20, fontWeight: 'large'}}>
-                  {item.country}
+                  {item}
                 </Text>
               </View>
             </View>
