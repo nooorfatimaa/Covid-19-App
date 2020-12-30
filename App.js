@@ -178,7 +178,7 @@ const CountryStatsScreen = ({navigation, route}) => {
   useEffect(() => {
     getStats();
     checkFavourite();
-  }, []);
+  }, [starColor]);
 
   const getStats = () => {
     const options = {
@@ -198,10 +198,8 @@ const CountryStatsScreen = ({navigation, route}) => {
   };
 
   const setFavourite = async () => {
-    await AsyncStorage.setItem("-"+country+"-", country);
+    await AsyncStorage.setItem(country, country);
     setStarColor("black");
-    const temp = await AsyncStorage.getItem(country);
-    alert(temp);
   }
 
   const checkFavourite = async () => {
@@ -243,7 +241,6 @@ const CountryStatsScreen = ({navigation, route}) => {
 
 const FavouriteListScreen = ({navigation}) => {
   const [favCountryList, setFaveCountryList] = useState([]);
-  const [starColor, setStarColor] = useState("black");
 
   const removeFromFav = async (country) => {
     await AsyncStorage.removeItem(country);
@@ -277,7 +274,7 @@ const FavouriteListScreen = ({navigation}) => {
               </View>
             </View>
           </TouchableOpacity>
-          <View style={{alignItems:'flex-end', borderBottomWidth: 1, borderColor: 'lightblue'}}><Pressable onPress={()=> removeFromFav(item)}><Ionicons name="star" size={40} color={starColor} /></Pressable></View>
+          <View style={{alignItems:'flex-end', borderBottomWidth: 1, borderColor: 'lightblue'}}><Pressable onPress={()=> removeFromFav(item)}><Ionicons name="star" size={40} color='black' /></Pressable></View>
           </View>
         )}
       />
@@ -321,8 +318,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator
-      //openByDefault={true}
-      //drawerType="slide"
       drawerStyle={{
         backgroundColor: 'white',
         width: 250,
